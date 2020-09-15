@@ -46,7 +46,7 @@ In my case the device `/dev/sde` is the SD card slot on the host.
  ![alt text](<gdisk_start.png>)
  8. Delete `android_expand` partition  
  ![alt text](<delete_partition.png>)
- 9. Create a new partition - ensure that the new size match the size of the new SD card (128 GB in my case)  
+ 9. Create a new partition - ensure that the new size matches the size of the new SD card (128 GB in my case)  
  ![alt text](<create_new_partition.png>)
  10. Switch to expert menu and set the newly created partition GUID to the same of the old disk:  
  ![alt text](<partition_GUID.png>)
@@ -77,7 +77,7 @@ In my case the device `/dev/sde` is the SD card slot on the host.
           Resizing the filesystem on /dev/mapper/crypt1 to 31212795 (4k) blocks.
           The filesystem on /dev/mapper/crypt1 is now 31212795 (4k) blocks long.
 
- 17. I checked the resized parition for errors twice:
+ 17. I checked the resized partition for errors twice:
 
           $ sudo e2fsck -f /dev/mapper/crypt1
           e2fsck 1.44.1 (24-Mar-2018)
@@ -102,5 +102,5 @@ In my case the device `/dev/sde` is the SD card slot on the host.
  18. Unmap the decrypted partition  
  `$ sudo dmsetup remove /dev/mapper/crypt1`
 
-At the end you have a lot of free space:  
+Finally you have a lot of free space:  
  ![alt text](<free_space.png>)
