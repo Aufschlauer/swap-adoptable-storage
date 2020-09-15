@@ -23,23 +23,24 @@ In my case the device `/dev/sde` is the SD card slot on the host.
  2. `dd` the image to your new SD card  
  `$ sudo dd if=SamsungGalaxyS7_8GB_InternalStorage.img.bin of=/dev/sde bs=1M status=progress`
  3. For the next step you need a patched `gdisk`  
-  3a. Get the source of `gdisk` - more information can be found here (german): https://www.android-hilfe.de/forum/android-6-0-x-marshmallow.2417/adopted-sd-partition-vergroessern.823463.html  
+ 4. Get the source of `gdisk` - more information can be found here (german): https://www.android-hilfe.de/forum/android-6-0-x-marshmallow.2417/adopted-sd-partition-vergroessern.823463.html  
    `$ apt-get source gdisk`
-  3b. Patch parttypes.cc according to  
-      $ diff -Naur gdisk-1.0.3/parttypes.cc /usr/src/gdisk-1.0.3/parttypes.cc 
---- gdisk-1.0.3/parttypes.cc	2017-07-28 03:41:20.000000000 +0200
-+++ /usr/src/gdisk-1.0.3/parttypes.cc	2020-09-06 19:49:11.614131088 +0200
-@@ -263,6 +263,8 @@
-    // A straggler Linux partition type....
-    AddType(0xfd00, "A19D880F-05FC-4D3B-A006-743F0F84911E", "Linux RAID");
- 
-+   AddType(0xffff, "193D1EA4-B3CA-11E4-B075-10604B889DCF", "Android Expand");
-+
-    // Note: DO NOT use the 0xffff code; that's reserved to indicate an
-    // unknown GUID type code.
- } // PartType::AddAllTypes()
+ 5. Patch parttypes.cc according to  
 
- * 
+          $ diff -Naur gdisk-1.0.3/parttypes.cc /usr/src/gdisk-1.0.3/parttypes.cc 
+          --- gdisk-1.0.3/parttypes.cc	2017-07-28 03:41:20.000000000 +0200
+          +++ /usr/src/gdisk-1.0.3/parttypes.cc	2020-09-06 19:49:11.614131088 +0200
+          @@ -263,6 +263,8 @@
+              // A straggler Linux partition type....
+              AddType(0xfd00, "A19D880F-05FC-4D3B-A006-743F0F84911E", "Linux RAID");
+
+          +   AddType(0xffff, "193D1EA4-B3CA-11E4-B075-10604B889DCF", "Android Expand");
+          +
+              // Note: DO NOT use the 0xffff code; that's reserved to indicate an
+              // unknown GUID type code.
+           } // PartType::AddAllTypes()
+
+ 6. sh
  
 
  
