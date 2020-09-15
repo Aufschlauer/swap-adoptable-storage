@@ -25,7 +25,7 @@ In my case the device `/dev/sde` is the SD card slot on the host.
  3. For the next step you need a patched `gdisk`  
  4. Get the source of `gdisk` - more information can be found here (german): https://www.android-hilfe.de/forum/android-6-0-x-marshmallow.2417/adopted-sd-partition-vergroessern.823463.html  
    `$ apt-get source gdisk`
- 5. Patch `parttypes.cc` according to  
+ 5. Patch `parttypes.cc` according to - the partition GUID must match the GUID of `android_expand` partition of the old disk  
 
           $ diff -Naur gdisk-1.0.3/parttypes.cc /usr/src/gdisk-1.0.3/parttypes.cc 
           --- gdisk-1.0.3/parttypes.cc	2017-07-28 03:41:20.000000000 +0200
@@ -44,10 +44,16 @@ In my case the device `/dev/sde` is the SD card slot on the host.
  `$ sudo gdisk /dev/sde`
  7. After start of `gdisk`  
  ![alt text](<gdisk_start.png>)
- 8. Delete `android_expand` partition
+ 8. Delete `android_expand` partition  
  ![alt text](<delete_partition.png>)
- 9. Create a new partition  
- adfb
+ 9. Create a new partition - ensure that the new size match the size of the new SD card (128 GB in my case)  
+ ![alt text](<create_new_partition.png>)
+ 10. Switch to expert menu and set the newly created partition GUID to the same of the old disk:  
+ ![alt text](<partition_GUID.png>)
+ 11. Return to main menu and change partition name  
+ ![alt text](<partition_name.png>)
+ 12. Verify that your partition matches the size of the new disk  
+ 
  
 
  
