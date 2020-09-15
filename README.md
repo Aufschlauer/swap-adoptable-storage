@@ -25,7 +25,7 @@ In my case the device `/dev/sde` is the SD card slot on the host.
  3. For the next step you need a patched `gdisk`  
  4. Get the source of `gdisk` - more information can be found here (german): https://www.android-hilfe.de/forum/android-6-0-x-marshmallow.2417/adopted-sd-partition-vergroessern.823463.html  
    `$ apt-get source gdisk`
- 5. Patch parttypes.cc according to  
+ 5. Patch `parttypes.cc` according to  
 
           $ diff -Naur gdisk-1.0.3/parttypes.cc /usr/src/gdisk-1.0.3/parttypes.cc 
           --- gdisk-1.0.3/parttypes.cc	2017-07-28 03:41:20.000000000 +0200
@@ -40,7 +40,14 @@ In my case the device `/dev/sde` is the SD card slot on the host.
               // unknown GUID type code.
            } // PartType::AddAllTypes()
 
- 6. sh
+ 6. Use the patched `gdisk` to expand the partition - according to https://nelenkov.blogspot.com/2015/06/decrypting-android-m-adopted-storage.html  
+ `$ sudo gdisk /dev/sde`
+ 7. After start of `gdisk`  
+ ![alt text](<gdisk_start.png>)
+ 8. Delete `android_expand` partition
+ ![alt text](<delete_partition.png>)
+ 9. Create a new partition  
+ adfb
  
 
  
