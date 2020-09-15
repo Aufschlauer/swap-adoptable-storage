@@ -34,7 +34,7 @@ In my case the device `/dev/sde` is the SD card slot on the host.
               // A straggler Linux partition type....
               AddType(0xfd00, "A19D880F-05FC-4D3B-A006-743F0F84911E", "Linux RAID");
 
-          +   AddType(0xffff, "193D1EA4-B3CA-11E4-B075-10604B889DCF", "Android Expand");
+          +   AddType(0xffff, "193D1EA4-B3CA-11E4-B075-10604B889DCF", "-->Unkown<--");
           +
               // Note: DO NOT use the 0xffff code; that's reserved to indicate an
               // unknown GUID type code.
@@ -58,7 +58,7 @@ In my case the device `/dev/sde` is the SD card slot on the host.
  ![alt text](<write_partition_table.png>)
  14. Decrypt newly created partition  
  `$ sudo dmsetup create crypt1 --table "0 $(sudo blockdev --getsize /dev/sde2) crypt aes-cbc-essiv:sha256 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 0 /dev/sde2 0"`  
- The xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx is the key to decrypt the partition. How to get the key is explained here: https://nelenkov.blogspot.com/2015/06/decrypting-android-m-adopted-storage.html
+ The `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` is the key to decrypt the partition. How to get the key is explained here: https://nelenkov.blogspot.com/2015/06/decrypting-android-m-adopted-storage.html
  15. Check the decrypted partition for errors:  
  
           $ sudo e2fsck -f /dev/mapper/crypt1
@@ -102,7 +102,5 @@ In my case the device `/dev/sde` is the SD card slot on the host.
  18. Unmap the decrypted partition  
  `$ sudo dmsetup remove /dev/mapper/crypt1`
 
-
-
-
- 
+At the end you have a lot of free space:  
+ ![alt text](<free_space.png>)
