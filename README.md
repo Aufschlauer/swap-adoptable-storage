@@ -40,7 +40,7 @@ In my case the device `/dev/sde` is the SD card slot on the host.
               // unknown GUID type code.
            } // PartType::AddAllTypes()
 
- 6. Use the patched `gdisk` to expand the partition - according to https://nelenkov.blogspot.com/2015/06/decrypting-android-m-adopted-storage.html  
+ 6. Use the patched `gdisk` to expand the partition  
  `$ sudo gdisk /dev/sde`
  7. After start of `gdisk`  
  ![alt text](<gdisk_start.png>)
@@ -53,7 +53,56 @@ In my case the device `/dev/sde` is the SD card slot on the host.
  11. Return to main menu and change partition name  
  ![alt text](<partition_name.png>)
  12. Verify that your partition matches the size of the new disk  
+ ![alt text](<verify_partition.png>)
+ 13. Write new partition table to disk  
+ ![alt text](<write_partition_table.png>)
+ 14. Decrypt newly created partition  
+ `$ sudo dmsetup create crypt1 --table "0 $(sudo blockdev --getsize /dev/sde2) crypt aes-cbc-essiv:sha256 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 0 /dev/sde2 0"`  
+ The xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx is the key to decrypt the partition. How to get the key is explained here: https://nelenkov.blogspot.com/2015/06/decrypting-android-m-adopted-storage.html
+ 15. Check the decrypted partition for errors:  
  
- 
+          $ sudo e2fsck -f /dev/mapper/crypt1
+          e2fsck 1.44.1 (24-Mar-2018)
+          Pass 1: Checking inodes, blocks, and sizes
+          Pass 2: Checking directory structure
+          Pass 3: Checking directory connectivity
+          Pass 4: Checking reference counts
+          Pass 5: Checking group summary information
+          /dev/mapper/crypt1: 3046/484800 files (14.1% non-contiguous), 1693456/1936123 blocks
+
+ 16. Resize the partition
+
+          $ sudo resize2fs /dev/mapper/crypt1
+          resize2fs 1.44.1 (24-Mar-2018)
+          Resizing the filesystem on /dev/mapper/crypt1 to 31212795 (4k) blocks.
+          The filesystem on /dev/mapper/crypt1 is now 31212795 (4k) blocks long.
+
+ 17. I checked the resized parition for errors twice:
+
+          $ sudo e2fsck -f /dev/mapper/crypt1
+          e2fsck 1.44.1 (24-Mar-2018)
+          Pass 1: Checking inodes, blocks, and sizes
+          Inode 7, i_size is 2009149440, should be 2013372416.  Fix<y>? yes
+          Pass 2: Checking directory structure
+          Pass 3: Checking directory connectivity
+          Pass 4: Checking reference counts
+          Pass 5: Checking group summary information
+          
+          /dev/mapper/crypt1: ***** FILE SYSTEM WAS MODIFIED *****
+          /dev/mapper/crypt1: 3046/7700240 files (14.1% non-contiguous), 2149093/31212795 blocks
+          $ sudo e2fsck -f /dev/mapper/crypt1
+          e2fsck 1.44.1 (24-Mar-2018)
+          Pass 1: Checking inodes, blocks, and sizes
+          Pass 2: Checking directory structure
+          Pass 3: Checking directory connectivity
+          Pass 4: Checking reference counts
+          Pass 5: Checking group summary information
+          /dev/mapper/crypt1: 3046/7700240 files (14.1% non-contiguous), 2149093/31212795 blocks
+
+ 18. Unmap the decrypted partition  
+ `$ sudo dmsetup remove /dev/mapper/crypt1`
+
+
+
 
  
