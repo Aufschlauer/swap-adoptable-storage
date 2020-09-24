@@ -18,6 +18,8 @@ So here comes a guide how to swap the adoptable storage SD card on Android 7. Th
 
 In my case the device `/dev/sde` is the SD card slot on the host.
 
+ 0. Get unique GUID and partition GUID code of your current disk:  
+ ![alt text](<current_GUID.png>)
  1. Make a backup of your current SD card  
  `$ sudo dd if=/dev/sde of=SamsungGalaxyS7_8GB_InternalStorage.img.bin bs=1M status=progress`
  2. `dd` the image to your new SD card  
@@ -25,7 +27,7 @@ In my case the device `/dev/sde` is the SD card slot on the host.
  3. For the next step you need a patched `gdisk`  
  4. Get the source of `gdisk` - more information can be found here (german): https://www.android-hilfe.de/forum/android-6-0-x-marshmallow.2417/adopted-sd-partition-vergroessern.823463.html  
    `$ apt-get source gdisk`
- 5. Patch `parttypes.cc` according to - the partition GUID must match the GUID of `android_expand` partition of the old disk  
+ 5. Patch `parttypes.cc` according to - the partition GUID code must match the GUID of `android_expand` partition of the old disk (see above)  
 
           $ diff -Naur gdisk-1.0.3/parttypes.cc /usr/src/gdisk-1.0.3/parttypes.cc 
           --- gdisk-1.0.3/parttypes.cc	2017-07-28 03:41:20.000000000 +0200
@@ -43,7 +45,8 @@ In my case the device `/dev/sde` is the SD card slot on the host.
  6. Use the patched `gdisk` to expand the partition  
  `$ sudo gdisk /dev/sde`
  7. After start of `gdisk`  
- ![alt text](<gdisk_start.png>)
+ ![alt text](<gdisk_start.png>)  
+ It might be the case that the kernel complains that the GPT is inconsistent. In this case call `gparted` and correct the error by accepting the bigger partition table.
  8. Delete `android_expand` partition  
  ![alt text](<delete_partition.png>)
  9. Create a new partition - ensure that the new size matches the size of the new SD card (128 GB in my case)  
@@ -90,6 +93,9 @@ In my case the device `/dev/sde` is the SD card slot on the host.
           
           /dev/mapper/crypt1: ***** FILE SYSTEM WAS MODIFIED *****
           /dev/mapper/crypt1: 3046/7700240 files (14.1% non-contiguous), 2149093/31212795 blocks
+
+
+
           $ sudo e2fsck -f /dev/mapper/crypt1
           e2fsck 1.44.1 (24-Mar-2018)
           Pass 1: Checking inodes, blocks, and sizes
